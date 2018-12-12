@@ -65,11 +65,11 @@ class AuthStore {
 }
 
 decorate(AuthStore, {
-  user: observable,
-  statusMessage: observable
+  user: observable
 });
 
 const authStore = new AuthStore();
+
 authStore.checkForExpiredToken();
 
 export default authStore;

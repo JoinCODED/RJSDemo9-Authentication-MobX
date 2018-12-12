@@ -5,6 +5,9 @@ import { observer } from "mobx-react";
 // Stores
 import authStore from "./store/authStore";
 
+import { observer } from "mobx-react";
+import authStore from "./store/authStore";
+
 class Login extends Component {
   state = {
     username: "",
