@@ -1,8 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { observer } from "mobx-react";
+
+// Store
+import authStore from "./store/authStore";
 
 // Components
 import Login from "./Login";
+import Logout from "./Logout.js";
 
 const Navbar = () => {
   return (
@@ -10,9 +15,9 @@ const Navbar = () => {
       <Link to="/" className="navbar-brand">
         Navbar
       </Link>
-      <Login />
+      {authStore.user ? <Logout /> : <Login />}
     </nav>
   );
 };
 
-export default Navbar;
+export default observer(Navbar);

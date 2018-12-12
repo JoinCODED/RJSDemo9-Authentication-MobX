@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 
+import { observer } from "mobx-react";
+import authStore from "./store/authStore";
+
 class Signup extends Component {
   state = {
     username: "",
@@ -12,11 +15,12 @@ class Signup extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    alert("SIGNUP: CONNECT ME!");
+    authStore.signupUser(this.state, this.props.history);
   };
 
   render() {
     const { username, email, password } = this.state;
+
     return (
       <div className="col-6 mx-auto">
         <div className="card my-5">
@@ -70,4 +74,4 @@ class Signup extends Component {
   }
 }
 
-export default Signup;
+export default observer(Signup);
