@@ -7,7 +7,7 @@ import authStore from "./store/authStore";
 
 // Components
 import Login from "./Login";
-import Logout from "./Logout.js";
+import Logout from "./Logout";
 
 const Navbar = () => {
   return (

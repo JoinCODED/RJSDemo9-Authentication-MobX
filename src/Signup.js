@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-
 import { observer } from "mobx-react";
+
+// Stores
 import authStore from "./store/authStore";
 
 class Signup extends Component {
@@ -15,7 +16,7 @@ class Signup extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    authStore.signupUser(this.state, this.props.history);
+    authStore.signup(this.state, this.props.history);
   };
 
   render() {
