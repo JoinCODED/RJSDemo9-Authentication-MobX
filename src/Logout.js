@@ -1,6 +1,7 @@
-import React, { Component } from "react";
+import React from "react";
 import { observer } from "mobx-react";
 
+// Stores
 import authStore from "./store/authStore";
 
 const Logout = () => {
