@@ -15,12 +15,11 @@ class Treasure extends Component {
   }
 
   render() {
+    if (!authStore.user) return <Redirect to="/login" />;
+
     const rows = thingStore.treasure.map(thing => (
       <ThingItem key={thing.name} thing={thing} />
     ));
-
-    if (!authStore.user) return <Redirect to="/login" />;
-
     return (
       <div className="mt-5 mx-auto col-6 text-center">
         <h1>Treasure</h1>

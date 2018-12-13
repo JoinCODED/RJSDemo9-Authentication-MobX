@@ -1,11 +1,11 @@
-import React from "react";
+import React, { Component } from "react";
 import { observer } from "mobx-react";
 
 import authStore from "./store/authStore";
 
 const Logout = () => {
   return (
-    <button className="btn btn-danger" onClick={() => authStore.logout()}>
+    <button className="btn btn-danger" onClick={authStore.logout}>
       Logout {authStore.user.username}
     </button>
   );

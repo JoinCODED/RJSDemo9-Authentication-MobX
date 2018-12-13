@@ -69,7 +69,6 @@ decorate(AuthStore, {
 });
 
 const authStore = new AuthStore();
-
-authStore.checkForExpiredToken();
+authStore.checkForToken();
 
 export default authStore;

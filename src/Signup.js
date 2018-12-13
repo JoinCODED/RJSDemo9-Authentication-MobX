@@ -5,9 +5,6 @@ import { Redirect } from "react-router-dom";
 // Stores
 import authStore from "./store/authStore";
 
-import { observer } from "mobx-react";
-import authStore from "./store/authStore";
-
 class Signup extends Component {
   state = {
     username: "",
