@@ -15,7 +15,6 @@ class Treasure extends Component {
       <ThingItem key={thing.name} thing={thing} />
     ));
 
-    // if (authStore.user) {
     return (
       <div className="mt-5 mx-auto col-6 text-center">
         <h1>Treasure</h1>
@@ -24,9 +23,6 @@ class Treasure extends Component {
         </table>
       </div>
     );
-    // }
-
-    // return <Redirect to="/" />;
   }
 }
 
