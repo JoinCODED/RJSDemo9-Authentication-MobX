@@ -301,17 +301,16 @@ Don't allow users to access pages they can't use! Redirect from private pages!
 `PrivateRoute.js`
 
 ```javascript
-import { Switch, Route, Redirect } from "react-router-dom";
+import React from "react";
+import { Route, Redirect } from "react-router-dom";
 import { observer } from "mobx-react";
 
-const PrivateRoute = ({ component: Component, authStore.user, redirectUrl, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      authStore.user ? <Component {...props} /> : <Redirect to={redirectUrl || "/"} />
-    }
-  />
-);
+import authStore from "./store/authStore";
+
+const PrivateRoute = ({ component: Component, redirectUrl, ...rest }) => {
+  if (authStore.user) return <Route {...rest} component={Component} />;
+  else return <Redirect to={redirectUrl || "/"} />;
+};
 
 export default observer(PrivateRoute);
 ```
