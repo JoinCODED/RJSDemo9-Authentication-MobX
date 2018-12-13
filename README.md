@@ -114,7 +114,7 @@ loginUser(userData) {
 
 #### Signup
 
-7.  Implement signup action:
+7.  Implement signup method:
 
 `authActions.js`
 
@@ -378,15 +378,11 @@ checkForExpiredToken() {
 };
 ```
 
-3.  Call the action from `componentDidMount` in `App.js`:
+3.  Call the method before exporting the store in `authStore.js`:
 
 ```javascript
-class App extends Component {
-  componentDidMount() {
-    authStore.checkToken();
-  }
-  ...
-}
+const authStore = new AuthStore();
+authStore.checkForToken();
 
-export default observer(App);
+export default authStore;
 ```
