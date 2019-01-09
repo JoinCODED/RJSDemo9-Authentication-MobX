@@ -28,45 +28,39 @@ const authStore = new AuthStore();
 
 export default authStore;
 ```
-
-2.  Add a `loginUser` method:
+2. Add a `signupUser` method:
 
 `authStore.js`
 
 ```javascript
- loginUser(userData) {
+  signupUser(userData) {
     axios
-      .post("https://precious-things.herokuapp.com/login/", userData)
+      .post("https://precious-things.herokuapp.com/signup/", userData)
       .then(res => res.data)
-      // For now just log user
-      .then(user => console.log(user))
+      .then(user => console.log(user)
       .catch(err => console.error(err.response));
-  };
+  }
 ```
-
-3.  Connect method to `Login.js`. Show the token being logged.
+3.  Connect method to `Signup.js`. Show the token being logged.
 
 ```javascript
-import {observer} from "mobx-react";
-import authStore from "./store/authStore";
-
 ...
-  handleSubmit(event) {
+handleSubmit(event) {
     event.preventDefault();
-    authStore.loginUser(this.state);
-  }
+    authStore.signupUser(this.state);
+}
 ...
 
-export default observer(Login);
+export default observer(Signup);
 ```
 
-5.  Explain JWT. Install `jwt-decode`. Decode the token. Set the user:
+4. Explain JWT. Install `jwt-decode`. Decode the token. Set the user:
 
 ```bash
 $ yarn add jwt-decode
 ```
 
-`authActions.js`
+`authStore.js`
 
 ```javascript
 ...
@@ -85,7 +79,7 @@ to
 ...
 ```
 
-6.  Still not able to make the request! Time to `setAuthToken`:
+5.  Still not able to make the request! Time to `setAuthToken`:
 
 `authActions.js`
 
@@ -112,16 +106,16 @@ loginUser(userData) {
 }
 ```
 
-#### Signup
+#### Login
 
-7.  Implement signup method:
+7.  Add a `loginUser` method:
 
 `authActions.js`
 
 ```javascript
-signupUser (userData) {
+loginUser(userData) {
     axios
-      .post("https://precious-things.herokuapp.com/signup/", userData)
+      .post("https://precious-things.herokuapp.com/login/", userData)
       .then(res => res.data)
       .then(user => {
         const decodedUser = jwt_decode(user.token);
@@ -132,13 +126,13 @@ signupUser (userData) {
   };
 ```
 
-8.  Connect to `Signup.js`. This will work BUT THE UX IS BAD (no indication that it worked!):
+8.  Connect to `Login.js`. This will work BUT THE UX IS BAD (no indication that it worked!):
 
 ```javascript
 ...
 handleSubmit(event) {
     event.preventDefault();
-    authStore.signupUser(this.state);
+    authStore.loginUser(this.state);
 }
 ...
 
