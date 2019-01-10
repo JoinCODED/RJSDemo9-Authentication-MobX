@@ -8,6 +8,7 @@ import AddAuthorCard from "./AddAuthorCard";
 
 // Store
 import authorStore from "./stores/authorStore";
+import authStore from "./stores/authStore";
 
 class AuthorsList extends Component {
   render() {
@@ -20,7 +21,7 @@ class AuthorsList extends Component {
         <h3>Authors</h3>
         <SearchBar store={authorStore} />
         <div className="row">
-          <AddAuthorCard />
+          {authStore.user && <AddAuthorCard />}
           {authorCards}
         </div>
       </div>
