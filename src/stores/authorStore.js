@@ -5,35 +5,40 @@ const instance = axios.create({
   baseURL: "https://the-index-api.herokuapp.com"
 });
 
+function errToArray(err) {
+  return Object.keys(err).map(key => `${key}: ${err[key]}`);
+}
+
 class AuthorStore {
-  constructor() {
-    this.authors = [];
-    this.loading = true;
-    this.query = "";
-    this.statusMessage = "";
-  }
+  authors = [];
 
-  fetchAuthors() {
-    return instance
-      .get("/api/authors/")
-      .then(res => res.data)
-      .then(authors => {
-        this.authors = authors;
-        this.loading = false;
-      })
-      .catch(err => console.error(err.response));
-  }
+  loading = true;
 
-  addAuthor(newAuthor) {
-    instance
-      .post("/api/authors/", newAuthor)
-      .then(res => res.data)
-      .then(author => {
-        this.authors.unshift(author);
-        this.statusMessage = "Success";
-      })
-      .catch(err => (this.statusMessage = err.response));
-  }
+  query = "";
+
+  errors = null;
+
+  fetchAuthors = async () => {
+    try {
+      const res = await instance.get("/api/authors/");
+      const authors = res.data;
+      this.authors = authors;
+      this.loading = false;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  addAuthor = async newAuthor => {
+    try {
+      const res = await instance.post("/api/authors/", newAuthor);
+      const author = res.data;
+      this.authors.unshift(author);
+      this.errors = null;
+    } catch (err) {
+      this.errors = errToArray(err.response.data);
+    }
+  };
 
   get filteredAuthors() {
     return this.authors.filter(author =>
@@ -43,14 +48,13 @@ class AuthorStore {
     );
   }
 
-  getAuthorById(id) {
-    return this.authors.find(author => +author.id === +id);
-  }
+  getAuthorById = id => this.authors.find(author => +author.id === +id);
 }
 
 decorate(AuthorStore, {
   authors: observable,
   loading: observable,
+  errors: observable,
   query: observable,
   filteredAuthors: computed
 });

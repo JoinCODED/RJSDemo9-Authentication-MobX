@@ -10,11 +10,11 @@ import AuthorDetail from "./AuthorDetail";
 import BookList from "./BookList";
 
 // Store
-import authorStore from "./stores/AuthorStore";
-import bookStore from "./stores/BookStore";
+import authorStore from "./stores/authorStore";
+import bookStore from "./stores/bookStore";
 
 class App extends Component {
-  getView() {
+  getView = () => {
     if (authorStore.loading || bookStore.loading) {
       return <Loading />;
     } else {
@@ -27,7 +27,7 @@ class App extends Component {
         </Switch>
       );
     }
-  }
+  };
 
   render() {
     return (
