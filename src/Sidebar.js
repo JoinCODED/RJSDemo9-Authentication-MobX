@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, withRouter } from "react-router-dom";
 import { observer } from "mobx-react";
 
 // Logo
@@ -37,4 +37,4 @@ class Sidebar extends Component {
   }
 }
 
-export default observer(Sidebar);
+export default withRouter(observer(Sidebar));
