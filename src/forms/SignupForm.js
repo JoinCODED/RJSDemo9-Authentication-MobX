@@ -30,6 +30,13 @@ class Signup extends Component {
         <div className="card my-5">
           <div className="card-body">
             <form onSubmit={this.handleSubmit}>
+              {authStore.errors && (
+                <div className="alert alert-danger" role="alert">
+                  {authStore.errors.map(error => (
+                    <p key={error}>{error}</p>
+                  ))}
+                </div>
+              )}
               <div className="form-group">
                 <label htmlFor="username">Username</label>
                 <input

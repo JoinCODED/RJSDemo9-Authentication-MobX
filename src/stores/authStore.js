@@ -6,16 +6,18 @@ const instance = axios.create({
   baseURL: "https://the-index-api.herokuapp.com"
 });
 
+function errToArray(err) {
+  return Object.keys(err).map(key => `${key}: ${err[key]}`);
+}
+
 class AuthStore {
-  constructor() {
-    this.user = null;
-  }
+  user = null;
 
-  checkForToken() {
-    this.setUser(localStorage.getItem("token"));
-  }
+  errors = null;
 
-  setUser(token) {
+  checkForToken = () => this.setUser(localStorage.getItem("token"));
+
+  setUser = token => {
     if (token) {
       this.user = jwt_decode(token);
       axios.defaults.headers.common.Authorization = `jwt ${token}`;
@@ -25,22 +27,25 @@ class AuthStore {
       delete axios.defaults.headers.common.Authorization;
       localStorage.removeItem("token");
     }
-  }
+  };
 
-  signup(newUser) {
-    instance
-      .post("/signup/", newUser)
-      .then(res => res.data)
-      .then(user => this.setUser(user.token))
-      .catch(err => console.error(err.response.data));
-  }
+  authenticate = async (newUser, type) => {
+    try {
+      const res = await instance.post(`/${type}/`, newUser);
+      const user = res.data;
+      this.setUser(user.token);
+      this.errors = null;
+    } catch (err) {
+      this.errors = errToArray(err.response.data);
+    }
+  };
+
+  signup = async newUser => {
+    this.authenticate(newUser, "signup");
+  };
 
   login(newUser) {
-    instance
-      .post("/login/", newUser)
-      .then(res => res.data)
-      .then(user => this.setUser(user.token))
-      .catch(err => console.error(err.response.data));
+    this.authenticate(newUser, "login");
   }
 
   logout() {
@@ -49,7 +54,8 @@ class AuthStore {
 }
 
 decorate(AuthStore, {
-  user: observable
+  user: observable,
+  errors: observable
 });
 
 const authStore = new AuthStore();
