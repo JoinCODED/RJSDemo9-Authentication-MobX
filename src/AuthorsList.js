@@ -7,7 +7,7 @@ import SearchBar from "./SearchBar";
 import AddAuthorCard from "./AddAuthorCard";
 
 // Store
-import authorStore from "./stores/AuthorStore";
+import authorStore from "./stores/authorStore";
 
 class AuthorsList extends Component {
   render() {
