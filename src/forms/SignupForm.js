@@ -2,27 +2,19 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 class Signup extends Component {
-  constructor(props) {
-    super(props);
+  state = {
+    username: "",
+    email: "",
+    password: ""
+  };
 
-    this.state = {
-      username: "",
-      email: "",
-      password: ""
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(event) {
+  handleChange = event =>
     this.setState({ [event.target.name]: event.target.value });
-  }
 
-  handleSubmit(event) {
+  handleSubmit = event => {
     event.preventDefault();
     alert("I DON'T WORK YET");
-  }
+  };
 
   render() {
     const { username, email, password } = this.state;
