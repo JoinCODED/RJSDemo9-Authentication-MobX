@@ -7,7 +7,6 @@ import Navbar from "./Navbar";
 import Signup from "./Signup";
 import Garbage from "./Garbage";
 import Treasure from "./Treasure";
-import PrivateRoute from "./PrivateRoute";
 
 class App extends Component {
   render() {
@@ -18,7 +17,7 @@ class App extends Component {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/garbage" component={Garbage} />
-            <PrivateRoute path="/treasure" component={Treasure} />
+            <Route path="/treasure" component={Treasure} />
             <Route path="/signup" component={Signup} />
             <Redirect to="/" />
           </Switch>
