@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Home = props => {
+const Home = () => {
   return (
     <div className="row d-flex align-items-center" style={{ height: "80vh" }}>
       <Link to="/garbage" className="btn btn-lg btn-outline-secondary mx-auto">
