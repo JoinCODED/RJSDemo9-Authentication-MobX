@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
+import { Redirect } from "react-router-dom";
 
 // Stores
 import authStore from "./store/authStore";
@@ -21,6 +22,8 @@ class Signup extends Component {
 
   render() {
     const { username, email, password } = this.state;
+
+    if (authStore.user) return <Redirect to="/" />;
 
     return (
       <div className="col-6 mx-auto">
