@@ -7,71 +7,65 @@ class AuthStore {
     this.user = null;
   }
 
-  setAuthToken(token) {
+  setUser(token) {
     if (token) {
-      axios.defaults.headers.common.Authorization = `JWT ${token}`;
-      localStorage.setItem("treasureToken", token);
+      localStorage.setItem("myToken", token);
+      axios.defaults.headers.common.Authorization = `jwt ${token}`;
+      const decodedUser = jwt_decode(token);
+      this.user = decodedUser;
     } else {
       delete axios.defaults.headers.common.Authorization;
-      localStorage.removeItem("treasureToken");
+      localStorage.removeItem("myToken");
+      this.user = null;
     }
   }
 
-  setCurrentUser(token) {
-    const user = jwt_decode(token);
-    this.user = user;
-  }
-
-  checkForToken() {
-    const token = localStorage.getItem("treasureToken");
-
+  checkForExpiredToken() {
+    const token = localStorage.getItem("myToken");
     if (token) {
       const currentTime = Date.now() / 1000;
       const user = jwt_decode(token);
 
-      if (user.exp > currentTime) {
-        this.setCurrentUser(token);
-        this.setAuthToken(token);
+      if (user.exp >= currentTime) {
+        this.setUser(token);
       } else {
-        this.logout();
+        this.logoutUser();
       }
     }
-  }
-
-  login(userData) {
-    axios
-      .post("https://precious-things.herokuapp.com/login/", userData)
-      .then(res => res.data)
-      .then(tokenObj => {
-        this.setCurrentUser(tokenObj.token);
-        this.setAuthToken(tokenObj.token);
-      })
-      .catch(err => console.error(err.response));
   }
 
   signup(userData, history) {
     axios
       .post("https://precious-things.herokuapp.com/signup/", userData)
       .then(res => res.data)
-      .then(tokenObj => {
-        this.setCurrentUser(tokenObj.token);
-        this.setAuthToken(tokenObj.token);
-        history.push("/");
+      .then(user => {
+        this.setUser(user.token);
+        history.replace("/");
       })
-      .catch(err => console.error(err.response));
+      .catch(err => console.error(err.response.data));
+  }
+
+  login(userData) {
+    axios
+      .post("https://precious-things.herokuapp.com/login/", userData)
+      .then(res => res.data)
+      .then(user => {
+        this.setUser(user.token);
+      })
+      .catch(err => console.error(err.response.data));
   }
 
   logout() {
-    this.user = null;
-    this.setAuthToken();
+    this.setUser();
   }
 }
 
 decorate(AuthStore, {
-  user: observable
+  user: observable,
+  statusMessage: observable
 });
 
 const authStore = new AuthStore();
-authStore.checkForToken();
+authStore.checkForExpiredToken();
 
 export default authStore;
