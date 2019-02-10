@@ -27,7 +27,7 @@ class AuthStore {
       if (user.exp >= currentTime) {
         this.setUser(token);
       } else {
-        this.logout();
+        this.logoutUser();
       }
     }
   };
@@ -65,10 +65,11 @@ class AuthStore {
 }
 
 decorate(AuthStore, {
-  user: observable
+  user: observable,
+  statusMessage: observable
 });
 
 const authStore = new AuthStore();
-authStore.checkForToken();
+authStore.checkForExpiredToken();
 
 export default authStore;
