@@ -1,4 +1,4 @@
-# RJSDemo9 - Authentication - MobX
+# RJSDemo8 - Authentication - MobX
 
 1.  Walk through the code:
 
@@ -254,18 +254,6 @@ render() {
 ...
 ```
 
-to
-
-```javascript
-...
-render() {
-    const { username, email, password } = this.state;
-    this.props.history.push('/');
-    ...
-}
-...
-```
-
 2.  Modify action to accept `history`:
 
 `authStore.js`
@@ -301,41 +289,34 @@ class Signup extends Component {
 
 ##### Private and Public ONLY Pages
 
-Don't allow users to access pages they can't use! Redirect from private pages!
+Don't allow users to access pages they can't use! Redirect from private and public ONLY pages!
 
-1.  Redirect from :
+1.  Redirect from `/treasure` :
 
-`PrivateRoute.js`
+`Treasure.js`
 
 ```javascript
-import React from "react";
-import { Route, Redirect } from "react-router-dom";
-import { observer } from "mobx-react";
-
-import authStore from "./store/authStore";
-
-const PrivateRoute = ({ component: Component, redirectUrl, ...rest }) => {
-  if (authStore.user) return <Route {...rest} component={Component} />;
-  else return <Redirect to={redirectUrl || "/"} />;
-};
-
-export default observer(PrivateRoute);
+...
+render() {
+  ...
+  if (!authStore.user) return <Redirect to="/login" />;
+  ...
+}
+...
 ```
 
-2.  Use private route for pages that require auth:
+2.  Redirect from `Signup.js`:
 
-`App.js`
+`Signup.js`
 
 ```javascript
-<Switch>
-  <Route path="/" exact component={Home} />
-  <Route path="/garbage" component={Garbage} />
-  <PrivateRoute path="/treasure" component={Treasure} />
-  <Route path="/signup" component={Signup} />
-  <Redirect to="/" />
-</Switch>;
-
-export default withRouter(observer(App));
+...
+render() {
+  ...
+  if (authStore.user) return <Redirect to="/" />;
+  ...
+}
+...
 ```
 
 ##### Persistent Login
@@ -347,12 +328,17 @@ If the page refreshes after sign in, I should STILL be signed in!
 `authStore.js`
 
 ```javascript
-setAuthToken(token) => {
+setUser = token => {
   if (token) {
-    localStorage.setItem("treasureToken", token);
+    localStorage.setItem("myToken", token);
     axios.defaults.headers.common.Authorization = `jwt ${token}`;
+    const decodedUser = jwt_decode(token);
+    this.user = decodedUser;
+  } else {
+    delete axios.defaults.headers.common.Authorization;
+    localStorage.removeItem("myToken");
+    this.user = null;
   }
-  ...
 };
 ```
 
@@ -361,26 +347,17 @@ setAuthToken(token) => {
 `authStore.js`
 
 ```javascript
-checkForExpiredToken() {
-    // Check for token expiration
-    const token = localStorage.treasureToken;
-
-    if (token) {
-      const currentTime = Date.now() / 1000;
-
-      // Decode token and get user info
-      const user = jwt_decode(token);
-
-      // Check token expiration
-      if (user.exp >= currentTime) {
-        // Set auth token header
-        this.setAuthToken(token);
-        // Set user
-        this.setCurrentUser(user);
-      } else {
-        this.logoutUser();
-      }
-  };
+checkForExpiredToken = () => {
+  const token = localStorage.getItem("myToken");
+  if (token) {
+    const currentTime = Date.now() / 1000;
+    const user = jwt_decode(token);
+    if (user.exp >= currentTime) {
+      this.setUser(token);
+    } else {
+      this.logout();
+    }
+  }
 };
 ```
 
