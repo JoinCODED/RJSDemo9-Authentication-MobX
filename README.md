@@ -15,9 +15,7 @@ import { decorate, observable, computed } from "mobx";
 import axios from "axios";
 
 class AuthStore {
-  constructor() {
-    this.user = null;
-  }
+  user = null;
 }
 
 decorate(AuthStore, {
@@ -28,30 +26,35 @@ const authStore = new AuthStore();
 
 export default authStore;
 ```
+
 2. Add a `signupUser` method:
 
 `authStore.js`
 
 ```javascript
-  signupUser(userData) {
-    axios
-      .post("https://precious-things.herokuapp.com/signup/", userData)
-      .then(res => res.data)
-      .then(user => console.log(user)
-      .catch(err => console.error(err.response));
+signup = async userData => {
+  try {
+    const res = await axios.post(
+      "https://precious-things.herokuapp.com/signup/",
+      userData
+    );
+    const user = res.data;
+    console.log(user);
+  } catch (err) {
+    console.error(err.response.data);
   }
+};
 ```
+
 3.  Connect method to `Signup.js`. Show the token being logged.
 
 ```javascript
 ...
-handleSubmit(event) {
+handleSubmit = event => {
     event.preventDefault();
-    authStore.signupUser(this.state);
+    authStore.signup(this.state);
 }
 ...
-
-export default observer(Signup);
 ```
 
 4. Explain JWT. Install `jwt-decode`. Decode the token. Set the user:
@@ -64,79 +67,73 @@ $ yarn add jwt-decode
 
 ```javascript
 ...
-.then(user => console.log(jwt_decode(user.token)))
+const user = res.data;
+console.log(jwt_decode(user));
 ...
 ```
 
-to
+5. Create and use a `setUser` method:
 
 ```javascript
+setUser = (token) => {
+  const decodedUser = jwt_decode(token);
+  this.user = decodedUser;
+}
 ...
-.then(user => {
-    const decodedUser = jwt_decode(user.token);
-    this.user = decodedUser;
+const user = res.data;
+this.setUser(user.token);
 })
 ...
 ```
 
-5.  Still not able to make the request! Time to `setAuthToken`:
+5.  Still not able to make the request! Time to set the axios authentication header in `setUser`:
 
 `authActions.js`
 
 ```javascript
-setAuthToken(token) {
+setUser = token => {
   if (token) {
     axios.defaults.headers.common.Authorization = `jwt ${token}`;
+    const decodedUser = jwt_decode(token);
+    this.user = decodedUser;
   }
   else {
     delete axios.defaults.headers.common.Authorization;
   }
 };
-
 ...
-
-loginUser(userData) {
-    ...
-    .then(user => {
-        const decodedUser = jwt_decode(user.token);
-        this.setAuthToken(user.token);
-        this.user = decodedUser;
-      })
-    ...
-}
 ```
 
 #### Login
 
-7.  Add a `loginUser` method:
+7.  Add a `login` method:
 
 `authActions.js`
 
 ```javascript
-loginUser(userData) {
-    axios
-      .post("https://precious-things.herokuapp.com/login/", userData)
-      .then(res => res.data)
-      .then(user => {
-        const decodedUser = jwt_decode(user.token);
-        this.setAuthToken(user.token);
-        this.user = decodedUser;
-      })
-      .catch(err => console.error(err.response));
-  };
+login = async userData => {
+  try {
+    const res = await axios.post(
+      "https://precious-things.herokuapp.com/signup/",
+      userData
+    );
+    const user = res.data;
+    this.setUser(user.token);
+  } catch (err) {
+    console.error(err.response.data);
+  }
+};
 ```
 
 8.  Connect to `Login.js`. This will work BUT THE UX IS BAD (no indication that it worked!):
 
 ```javascript
 ...
-handleSubmit(event) {
+handleSubmit = event => {
     event.preventDefault();
-    authStore.loginUser(this.state);
+    authStore.login(this.state);
 }
 ...
-
-export default observer(Signup);
 ```
 
 #### UX Features
@@ -153,7 +150,7 @@ import { observer } from "mobx-react";
 
 import authStore from "./store/authStore";
 
-const Logout = props => {
+const Logout = () => {
   return (
     <button className="btn btn-danger" onClick={() => alert("LOGOUT!!")}>
       Logout {authStore.user.username}
@@ -188,9 +185,20 @@ export default observer(Navbar);
 `authStore.js`
 
 ```javascript
-logoutUser() {
-  this.user = null;
-  this.setAuthToken();
+setUser = token => {
+  if (token) {
+    axios.defaults.headers.common.Authorization = `jwt ${token}`;
+    const decodedUser = jwt_decode(token);
+    this.user = decodedUser;
+  }
+  else {
+    delete axios.defaults.headers.common.Authorization;
+    this.user = null;
+  }
+};
+...
+logout = () => {
+  this.setUser();
 };
 ```
 
@@ -202,7 +210,7 @@ logoutUser() {
 // Actions
 import authStore from "./store/authStore";
 ...
-<button className="btn btn-danger" onClick={authStore.logoutUser}>
+<button className="btn btn-danger" onClick={authStore.logout}>
     Logout {authStore.user.username}
 </button>
 ...
@@ -228,6 +236,8 @@ const Home = props => {
     ...
   );
 };
+
+export default observer(Home);
 ```
 
 ##### Redirect after signup
@@ -261,15 +271,18 @@ render() {
 `authStore.js`
 
 ```javascript
-signupUser = (userData, history) => {
-    ...
-      .then(user => {
-        const decodedUser = jwt_decode(user.token);
-        this.setAuthToken(user.token);
-        this.setCurrentUser(decodedUser);
-        history.push("/");
-      })
-    ...
+signup = async (userData, history) => {
+  try {
+    const res = axios.post(
+      "https://precious-things.herokuapp.com/signup/",
+      userData
+    );
+    const user = res.data;
+    this.setUser(user.token);
+    history.replace("/");
+  } catch (err) {
+    console.error(err.response.data);
+  }
 };
 ```
 
@@ -278,7 +291,7 @@ signupUser = (userData, history) => {
 ```javascript
 class Signup extends Component {
   ...
-  handleSubmit(event) {
+  handleSubmit = event => {
     event.preventDefault();
     authStore.signupUser(this.state, this.props.history);
   }
@@ -286,11 +299,11 @@ class Signup extends Component {
 }
 ```
 
-##### PrivateRoutes
+##### Private and Public ONLY Pages
 
 Don't allow users to access pages they can't use! Redirect from private pages!
 
-1.  Private Route:
+1.  Redirect from :
 
 `PrivateRoute.js`
 
@@ -320,10 +333,9 @@ export default observer(PrivateRoute);
   <PrivateRoute path="/treasure" component={Treasure} />
   <Route path="/signup" component={Signup} />
   <Redirect to="/" />
-</Switch>
+</Switch>;
 
 export default withRouter(observer(App));
-
 ```
 
 ##### Persistent Login
