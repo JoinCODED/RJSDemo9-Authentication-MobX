@@ -92,14 +92,9 @@ this.setUser(user.token);
 
 ```javascript
 setUser = token => {
-  if (token) {
     axios.defaults.headers.common.Authorization = `jwt ${token}`;
     const decodedUser = jwt_decode(token);
     this.user = decodedUser;
-  }
-  else {
-    delete axios.defaults.headers.common.Authorization;
-  }
 };
 ...
 ```
