@@ -82,7 +82,6 @@ setUser = (token) => {
 ...
 const user = res.data;
 this.setUser(user.token);
-})
 ...
 ```
 
