@@ -81,7 +81,7 @@ setUser = (token) => {
 }
 ...
 const user = res.data;
-this.setUser(user.token);
+this.setUser(user.access);
 ...
 ```
 
@@ -91,7 +91,7 @@ this.setUser(user.token);
 
 ```javascript
 setUser = token => {
-    axios.defaults.headers.common.Authorization = `jwt ${token}`;
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const decodedUser = jwt_decode(token);
     this.user = decodedUser;
 };
@@ -102,7 +102,7 @@ setUser = token => {
 
 7.  Add a `login` method:
 
-`authActions.js`
+`authStore.js`
 
 ```javascript
 login = async userData => {
@@ -112,7 +112,7 @@ login = async userData => {
       userData
     );
     const user = res.data;
-    this.setUser(user.token);
+    this.setUser(user.access);
   } catch (err) {
     console.error(err.response.data);
   }
@@ -181,7 +181,7 @@ export default observer(Navbar);
 ```javascript
 setUser = token => {
   if (token) {
-    axios.defaults.headers.common.Authorization = `jwt ${token}`;
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     const decodedUser = jwt_decode(token);
     this.user = decodedUser;
   }
