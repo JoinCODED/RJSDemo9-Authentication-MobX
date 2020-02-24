@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 
 // Store
 import thingStore from "./store/thingStore";
+import ThingItem from "./ThingItem";
 
 class Treasure extends Component {
   componentDidMount() {
@@ -11,9 +12,7 @@ class Treasure extends Component {
 
   render() {
     const rows = thingStore.treasure.map(thing => (
-      <tr key={thing.name} className="table-warning">
-        <td>{thing.name}</td>
-      </tr>
+      <ThingItem key={thing.name} thing={thing} />
     ));
 
     return (

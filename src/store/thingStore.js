@@ -1,5 +1,6 @@
 import { decorate, observable } from "mobx";
-import axios from "axios";
+
+import { instance } from "./instance";
 
 class ThingStore {
   garbage = [];
@@ -8,9 +9,7 @@ class ThingStore {
 
   fetchGarbage = async () => {
     try {
-      const res = await axios.get(
-        "https://precious-things.herokuapp.com/api/things/"
-      );
+      const res = await instance.get("things/");
       const things = res.data;
       this.garbage = things;
     } catch (err) {
@@ -20,9 +19,7 @@ class ThingStore {
 
   fetchTreasure = async () => {
     try {
-      const res = await axios.get(
-        "https://precious-things.herokuapp.com/api/private-things/"
-      );
+      const res = await instance.get("private-things/");
       const things = res.data;
       this.treasure = things;
     } catch (err) {
